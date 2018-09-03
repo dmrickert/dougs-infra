@@ -1,0 +1,7 @@
+# Bootstrapped scripts via mlabouardy at https://github.com/mlabouardy/terraform-aws-labs/tree/master/vpc-public-private-subnet
+# His tutorial of it is on hackernoon 
+
+# Terraform Basic Commands
+#    terraform plan
+#    terraform apply
+#    terraform destroy

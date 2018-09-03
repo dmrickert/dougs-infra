@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: Set crontab entry for autoshutdown at 3am MST
+    cron:
+      name: "Bastion autoshutdown"
+      minute: "0"
+      hour: "9"
+      job: "shutdown -h now"
+
+# Run with ansible-playbook -i IPADDRESS, configure-bastion.yml

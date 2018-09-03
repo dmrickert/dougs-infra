@@ -1,0 +1,6 @@
+# Configure the AWS Provider
+provider "aws" {
+  region                  = "us-west-1"
+  shared_credentials_file = "~/.aws/creds"
+  profile                 = "default"
+}
