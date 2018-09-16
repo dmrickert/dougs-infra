@@ -2,8 +2,6 @@
 # Usage: ansible-playbook -i PRIVATE-IP, playbooks/configure-ff.yml
 
 - hosts: all
-  become: yes
-  become_method: sudo
 
   tasks:
   - name: Install necessary packages
@@ -13,30 +11,35 @@
       packages:
       - git
       - python3
+    become: yes
+    become_method: sudo
 
   - name: Pull down git repository
     git:
       repo: 'https://github.com/dmrickert/ff_bot.git'
-      dest: /opt/ff_bot/
-      version: private-repo-support 
+      dest: ~/ff_bot/
+      version: personal-tweaks 
+      force: yes
 
   - name: Install pip requirements
     pip:
-      requirements: /opt/ff_bot/requirements.txt
+      requirements: ~/ff_bot/requirements.txt
       executable: pip3
+      extra_args: '--user'
+    ignore_errors: True
 
   - name: Copy Configuration file to the git repo
     copy:
       src: ff-bot-config
-      dest: /opt/ff_bot/ff-bot-config
+      dest: ~/ff_bot/ff-bot-config
 
   - name: Kill process if it exists
-    shell: pkill -f 'python3 /opt/ff_bot/ff_bot/ff_bot.py' | cat
+    shell: pkill -f 'python3 ~/ff_bot/ff_bot/ff_bot.py' | cat
     ignore_errors: True
 
   # Really should turn this into a service at some point
   - name: Start our app
-    shell: "source /opt/ff_bot/ff-bot-config && nohup python3 /opt/ff_bot/ff_bot/ff_bot.py </dev/null >/dev/null 2>&1 &"
+    shell: "source ~/ff_bot/ff-bot-config && nohup python3 ~/ff_bot/ff_bot/ff_bot.py </dev/null >/dev/null 2>&1 &"
 
   - name: Verify our app is running
-    shell: pgrep -f 'python3 /opt/ff_bot/ff_bot/ff_bot.py'
+    shell: pgrep -f 'python3 /home/ec2-user/ff_bot/ff_bot/ff_bot.py'

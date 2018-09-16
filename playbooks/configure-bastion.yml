@@ -9,6 +9,7 @@
       name: "Bastion autoshutdown"
       minute: "0"
       hour: "9"
+      user: root
       job: "shutdown -h now"
 
-# Run with ansible-playbook -i IPADDRESS, configure-bastion.yml
+# Run with ansible-playbook -i IPADDRESS, -u ec2-user configure-bastion.yml
