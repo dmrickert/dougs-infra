@@ -4,6 +4,11 @@
 - hosts: all
 
   tasks:
+  - name: Change this to accommodate multiple installs on same OS (not recommended, use docker)
+    set_fact: 
+      install_location: "/home/ec2-user/ff_bot_vt"
+      config: "ff-bot-config-vt"
+
   - name: Install necessary packages
     yum:
       name: "{{ packages }}"
@@ -17,29 +22,32 @@
   - name: Pull down git repository
     git:
       repo: 'https://github.com/dmrickert/ff_bot.git'
-      dest: ~/ff_bot/
+      dest: "{{ install_location }}"
       version: personal-tweaks 
       force: yes
 
   - name: Install pip requirements
     pip:
-      requirements: ~/ff_bot/requirements.txt
+      requirements: "{{ install_location }}/requirements.txt"
       executable: pip3
       extra_args: '--user'
     ignore_errors: True
 
   - name: Copy Configuration file to the git repo
     copy:
-      src: ff-bot-config
-      dest: ~/ff_bot/ff-bot-config
+      src: "{{ config }}"
+      dest: "{{ install_location }}/ff-bot-config"
 
   - name: Kill process if it exists
-    shell: pkill -f 'python3 ~/ff_bot/ff_bot/ff_bot.py' | cat
+    shell: "pkill -f 'python3 {{ install_location }}/ff_bot/ff_bot.py' | cat"
     ignore_errors: True
 
   # Really should turn this into a service at some point
   - name: Start our app
-    shell: "source ~/ff_bot/ff-bot-config && nohup python3 ~/ff_bot/ff_bot/ff_bot.py </dev/null >/dev/null 2>&1 &"
+    shell: "source {{ install_location }}/ff-bot-config && nohup python3 {{ install_location }}/ff_bot/ff_bot.py </dev/null >/dev/null 2>&1 &"
+    register: command_output
+
+  - debug: msg="{{ command_output.stdout }}  AND {{ command_output.stderr }}"
 
   - name: Verify our app is running
-    shell: pgrep -f 'python3 /home/ec2-user/ff_bot/ff_bot/ff_bot.py'
+    shell: "pgrep -f 'python3 {{ install_location }}/ff_bot/ff_bot.py'"
