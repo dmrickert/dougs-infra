@@ -27,11 +27,7 @@
       force: yes
 
   - name: Install pip requirements
-    pip:
-      requirements: "{{ install_location }}/requirements.txt"
-      executable: pip3
-      extra_args: '--user'
-    ignore_errors: True
+    shell: "pip3 install --user -r {{ install_location }}/requirements.txt"
 
   - name: Copy Configuration file to the git repo
     copy:
@@ -40,7 +36,7 @@
 
   - name: Kill process if it exists
     shell: "pkill -f 'python3 {{ install_location }}/ff_bot/ff_bot.py' | cat"
-    ignore_errors: True
+    failed_when: false
 
   # Really should turn this into a service at some point
   - name: Start our app
